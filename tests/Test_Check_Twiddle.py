@@ -68,7 +68,7 @@ def test_build_url_raises_ValueError(hostname, port, object_name, name, attribut
   twiddle.build_url(object_name, name, attribute_name)
 
 @parameterized.expand([
-  ('qd-app-10.rally.prod', '7001', 'bean', 'datasource', 'NumBusyConnections'),
+  ('qd-app-10.blah.prod', '7001', 'bean', 'datasource', 'NumBusyConnections'),
 ])
 def test_urlopen(hostname, port, object_name, name, attribute_name):
   twiddle.hostname = hostname
@@ -81,7 +81,7 @@ def test_urlopen(hostname, port, object_name, name, attribute_name):
 
 
 @parameterized.expand([
-  ('qd-app-10.rally.prod', '7001', 'bean', 'datasource', 'NumBusyConnections'),
+  ('qd-app-10.blah.prod', '7001', 'bean', 'datasource', 'NumBusyConnections'),
 ])
 def test_connect(hostname, port, object_name, name, attribute_name):
   req = twiddle.connect(object_name, name, attribute_name, hostname, port)
