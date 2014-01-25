@@ -1,3 +1,17 @@
+###############################################################################
+# Script: check_twiddle.py
+# Date: 1-22-2014
+# Author: Cody Lane
+#
+# Description:
+#   An example that uses the urllib2 python library for connecting to a java
+#   twiddle endpoint.  A twiddle endpoint listens for HTTP GET requests
+#   that contain JMX information.
+#
+#   The use of Jconsole is/will be required first to obtain the JXM MBean
+#   information so you can plug in this information to the script.
+#
+###############################################################################
 import socket
 import urllib2
 
