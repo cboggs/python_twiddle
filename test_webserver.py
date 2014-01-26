@@ -5,8 +5,9 @@ import os
 import sys
 import signal
 import psutil
-from SignalHandler import SignalHandler
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from signalhandler.SignalHandler import SignalHandler
+
 
 LISTEN = ''
 PORT   = 48001
