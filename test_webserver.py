@@ -13,7 +13,7 @@ LISTEN = ''
 PORT   = 48001
 
 class MyHTTPServer(HTTPServer):
-    def __init__(self, host='', port=7001):
+    def __init__(self, host=LISTEN, port=PORT):
         HTTPServer.__init__(self, (host, port), MyHandler)
         self._endpoints = []
         self._sig_handler = SignalHandler()
