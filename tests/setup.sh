@@ -11,4 +11,4 @@ if [ $? -ne 0 ]; then
   [ $? -ne 0 ] && err "Commands pip and easy_install do not exist, you will need to install setuptools first"
 fi
 
-pip install nose nose-progressive nosecolor nose-parameterized
+pip install nose nose-progressive nosecolor nose-parameterized psutil
