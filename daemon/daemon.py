@@ -1,9 +1,16 @@
 #!/usr/bin/env python
+#####################################################################
+# Library: daemon.py
+# Author: Sander Marechal
+#
+# Modified By: Cody Lane
+#
+#####################################################################
 
 import sys, os, time, atexit
 from signal import SIGTERM 
 
-class Daemon:
+class Daemon(object):
 	"""
 	A generic daemon class.
 	
@@ -127,3 +134,4 @@ class Daemon:
 		You should override this method when you subclass Daemon. It will be called after the process has been
 		daemonized by start() or restart().
 		"""
+        raise NotImplementedError('Abstract method must be overidden in subclass.')
