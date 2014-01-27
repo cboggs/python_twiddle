@@ -6,3 +6,5 @@ import os
 
 from twiddle.signalhandler import SignalHandler
 import twiddle.tests as tests
+
+import twiddle.daemon
