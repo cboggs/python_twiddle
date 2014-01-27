@@ -1,3 +1,6 @@
 [submodule "signalhandler"]
 	path = signalhandler
 	url = https://github.com/codylane/python-signalhandler
+[submodule "daemon"]
+	path = daemon
+	url = https://github.com/codylane/python-daemon.git
