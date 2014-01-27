@@ -4,8 +4,5 @@ import twiddle.check_almconnections
 import sys
 import os
 
-sys.path.append('twiddle/signalhandler')
-sys.path.append('signalhandler')
-from SignalHandler import SignalHandler
-
+from twiddle.signalhandler import SignalHandler
 import twiddle.tests as tests

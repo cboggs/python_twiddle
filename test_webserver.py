@@ -6,13 +6,23 @@ import sys
 import signal
 import psutil
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SocketServer import ThreadingMixIn
+from SocketServer import ForkingMixIn
 from signalhandler.SignalHandler import SignalHandler
+from daemon import Daemon
 
+def get_execution_path():
+    abs_path = os.path.abspath(sys.argv[0])
+    root_dir = os.path.dirname(abs_path)
+    return root_dir
 
-LISTEN = ''
-PORT   = 48001
+LISTEN     = ''
+PORT       = 48001
+PIDFILE    = get_execution_path() + '/webserver.pid'
+STDOUT_LOG = get_execution_path() + '/stdout.log'
+STDERR_LOG = get_execution_path() + '/stderr.log'
 
-class MyHTTPServer(HTTPServer):
+class MyHTTPServer(ForkingMixIn, HTTPServer):
     def __init__(self, host=LISTEN, port=PORT):
         HTTPServer.__init__(self, (host, port), MyHandler)
         self._endpoints = []
@@ -36,6 +46,13 @@ class MyHTTPServer(HTTPServer):
     def register_endpoint(self, path):
         if path not in self._endpoints:
             self._endpoints.append(path)
+
+class DaemonizeMyHTTPServer(Daemon):
+    def run(self, server):
+        if isinstance(server, MyHTTPServer) is False:
+            raise ValueError('server argument must be a MyHTTPServer instance, not %s=%s' %(type(server), server))
+        self.daemonize()
+        server.run()
 
 class MyHandler(BaseHTTPRequestHandler):
 
@@ -61,8 +78,17 @@ class MyHandler(BaseHTTPRequestHandler):
         self.end_headers()
         return
 
-def start_server():
-    server.run()
+def start_server(daemonize=True):
+    if daemonize:
+        daemon = DaemonizeMyHTTPServer(
+                pidfile = PIDFILE,
+                stdin   = '/dev/null',
+                stdout  = STDOUT_LOG,
+                stderr  = STDERR_LOG
+            )
+        daemon.run(server)
+    else:
+        server.run()
 
 def stop_server():
     progname = sys.argv[0]
@@ -89,6 +115,7 @@ if __name__ == '__main__':
     if action == 'start':
         server = MyHTTPServer(LISTEN, PORT)
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MaxPoolSize')
+        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumBusyConnections')
         start_server()
     elif action == 'stop':
         if stop_server() is False:

@@ -16,7 +16,7 @@ def test_connect(hostname, port, object_name, name, attribute_name):
 def test_close_closes_down_open_pointer():
     hostname = 'localhost'
     port = '48001'
-    uri = twiddle.build_url(hostname, 'bean', 'datasource', 'NumBusyConnection', port)
+    uri = twiddle.build_url(hostname, 'bean', 'datasource', 'NumBusyConnections', port)
     req = twiddle.connect(uri)
     twiddle.close(req)
     assert req.fp is None
