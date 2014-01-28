@@ -9,7 +9,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from SocketServer import ThreadingMixIn
 from SocketServer import ForkingMixIn
 from signalhandler.SignalHandler import SignalHandler
-from daemon import Daemon
+from daemon.daemon import Daemon
 
 def get_execution_path():
     abs_path = os.path.abspath(sys.argv[0])
@@ -90,19 +90,25 @@ def start_server(daemonize=True):
     else:
         server.run()
 
-def stop_server():
+def status_server():
     progname = sys.argv[0]
     for proc in psutil.process_iter():
         try:
             if progname in proc.cmdline and proc.pid != os.getpid():
-                os.kill(proc.pid, signal.SIGTERM)
-                return True
+                return proc.pid
         except:
             pass
+    return None
+
+def stop_server():
+    pid = status_server()
+    if pid is not None:
+        os.kill(pid, signal.SIGTERM)
+        return True
     return False
 
 def usage():
-    print('USAGE: %s [start|stop]')
+    print('USAGE: %s [start|status|stop]')
     sys.exit(0)
 
 if __name__ == '__main__':
@@ -117,11 +123,22 @@ if __name__ == '__main__':
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MaxPoolSize')
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumBusyConnections')
         start_server()
+    elif action == 'status':
+        pid = status_server()
+        if pid is not None:
+            print('server running on port %s, pid %s' %(PORT, pid))
+            sys.exit(0)
+        else:
+            print('server is not running.')
+            sys.exit(2)
     elif action == 'stop':
         if stop_server() is False:
-            print("ERR: unable to stop server %s process" %(sys.argv[0]))
+            print('server is not running, nothing to stop')
             sys.exit(1)
+        else:
+            print('stopped server')
         sys.exit(0)
     else:
         usage()
-
+# if we get here just exit 0
+sys.exit(0)
