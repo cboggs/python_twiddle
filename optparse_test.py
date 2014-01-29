@@ -11,7 +11,7 @@ parser.add_option(
     '-w', 
     '--warning', 
     action='store',
-    type='int',
+    type='string',
     dest='warning', 
     metavar='WARNING', 
     help='REQUIRED: The warning threshold'
@@ -21,7 +21,7 @@ parser.add_option(
     '-c',
     '--critical',
     action='store',
-    type='int',
+    type='string',
     dest='critical',
     metavar='CRITICAL',
     help='REQUIRED: The critical threshold'

@@ -121,7 +121,9 @@ if __name__ == '__main__':
     if action == 'start':
         server = MyHTTPServer(LISTEN, PORT)
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MaxPoolSize')
+        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MinPoolSize')
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumBusyConnections')
+        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumIdleConnections')
         start_server()
     elif action == 'status':
         pid = status_server()
