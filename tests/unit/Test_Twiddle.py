@@ -1,4 +1,4 @@
-import twiddle.check_twiddle as twiddle
+import twiddle.twiddle as twiddle
 from nose_parameterized import parameterized
 from nose.tools import raises
 
