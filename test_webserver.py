@@ -22,12 +22,38 @@ PIDFILE    = get_execution_path() + '/webserver.pid'
 STDOUT_LOG = get_execution_path() + '/stdout.log'
 STDERR_LOG = get_execution_path() + '/stderr.log'
 
+class Endpoint(object):
+    _path = None
+    _callback = None
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, path):
+        self._path = path
+
+    @property
+    def callback(self):
+        return self._callback
+
+    @callback.setter
+    def callback(self, callback):
+        self._callback = callback
+
+    def __repr__(self):
+        return 'Class:%s path:%s callback:%s' %(self.__class__.__name__, self._path, self._callback)
+
 class MyHTTPServer(ForkingMixIn, HTTPServer):
     def __init__(self, host=LISTEN, port=PORT):
         HTTPServer.__init__(self, (host, port), MyHandler)
         self._endpoints = []
         self._sig_handler = SignalHandler()
         self.register_default_sig_handlers()
+
+    def endpoints(self):
+        return self._endpoints
 
     def register_default_sig_handlers(self):
         self._sig_handler.register(signal.SIGTERM, self.stop)
@@ -43,9 +69,10 @@ class MyHTTPServer(ForkingMixIn, HTTPServer):
     def stop(self):
         stop_server()
 
-    def register_endpoint(self, path):
-        if path not in self._endpoints:
-            self._endpoints.append(path)
+    def register_endpoint(self, path, return_val=None):
+        if path not in self.endpoints():
+            endpoint = Endpoint(path, return_val)
+            self._endpoints.append(endpoint)
 
 class DaemonizeMyHTTPServer(Daemon):
     def run(self, server):
@@ -58,18 +85,22 @@ class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path in self.server._endpoints:
-            self.send_valid_response()
+            callback = server._endpoints.get('callback')
+            self.send_valid_response(callback)
         else:
             self.send_invalid_response()
 
     def do_POST(self):
         pass
 
-    def send_valid_response(self):
+    def send_valid_response(self, callback):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
-        self.wfile.write('20')
+        if callback is None:
+            self.wfile.write('20')
+        else:
+            self.wfile.write(callback())
         return
 
     def send_invalid_response(self):
@@ -120,8 +151,8 @@ if __name__ == '__main__':
 
     if action == 'start':
         server = MyHTTPServer(LISTEN, PORT)
-        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MaxPoolSize')
-        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MinPoolSize')
+        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MaxPoolSize', 55)
+        server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=MinPoolSize', 50)
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumBusyConnections')
         server.register_endpoint('/twiddle/get.op?objectName=bean:name=datasource&attributeName=NumIdleConnections')
         start_server()
